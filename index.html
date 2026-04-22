@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN" x-data="portfolioApp()" x-init="init()" :class="{ dark: darkMode }" @keydown.escape.window="showQR = false">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Aurein (舊雨) - Portfolio</title>
+
+  <!-- 引入顺序：配置 -> 样式 -> 逻辑 -> Alpine.js。 -->
+  <script src="./config.js"></script>
+  <link rel="stylesheet" href="./style.css">
+  <script src="./app.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+
+<body>
+  <template x-if="showSplash">
+    <div class="splash-screen" aria-live="polite">
+      <div class="splash-ripple"></div>
+      <div class="splash-brand" x-text="config.splash.brand"></div>
+    </div>
+  </template>
+
+  <div class="bg-layer bg-light" :class="darkMode ? 'is-hidden' : 'is-visible'"></div>
+  <div class="bg-layer bg-dark" :class="darkMode ? 'is-visible' : 'is-hidden'"></div>
+
+  <main class="app-shell" x-show="!showSplash" x-cloak x-transition.opacity.duration.500ms>
+    <header class="topbar">
+      <div class="status-pill glass">
+        <span class="status-dot" aria-hidden="true"></span>
+        <span x-text="config.ui.status"></span>
+      </div>
+
+      <button class="icon-button glass" type="button" @click="toggleDarkMode()" :aria-label="config.ui.darkModeLabel">
+        <svg x-show="!darkMode" class="icon sun" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364-.707-.707M6.343 6.343l-.707-.707m12.728 0-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z"/>
+        </svg>
+        <svg x-show="darkMode" x-cloak class="icon moon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 0 1 8.646 3.646 9.003 9.003 0 0 0 12 21a9.003 9.003 0 0 0 8.354-5.646z"/>
+        </svg>
+      </button>
+    </header>
+
+    <section class="card-scene" aria-label="Profile card">
+      <button class="profile-card" type="button" @click="cardFlipped = !cardFlipped" :class="{ 'is-flipped': cardFlipped }">
+        <div class="card-face card-front glass">
+          <div class="avatar-wrap">
+            <div class="avatar-glow"></div>
+            <img class="avatar" :src="config.profile.avatarUrl" :alt="config.profile.avatarAlt">
+          </div>
+
+          <h1 class="name">
+            <span x-text="config.profile.name"></span>
+            <span class="handle" x-text="config.profile.handle"></span>
+          </h1>
+
+          <p class="quote">
+            <template x-for="line in config.profile.quote" :key="line">
+              <span><span x-text="line"></span><br></span>
+            </template>
+          </p>
+
+          <div class="tag-row" aria-label="Profile tags">
+            <template x-for="tag in config.profile.tags" :key="`${tag.icon}-${tag.label}`">
+              <span class="tag">
+                <span x-text="tag.icon"></span>
+                <span x-text="tag.label"></span>
+              </span>
+            </template>
+          </div>
+
+          <p class="tap-hint" x-text="config.ui.tapHint"></p>
+        </div>
+
+        <div class="card-face card-back">
+          <div class="terminal-bar">
+            <div class="traffic-lights" aria-hidden="true"><span></span><span></span><span></span></div>
+            <div class="terminal-title" x-text="config.cardBack.terminalTitle"></div>
+          </div>
+
+          <div class="terminal-body" @click.stop="cardFlipped = !cardFlipped">
+            <template x-for="entry in config.cardBack.commands" :key="entry.command">
+              <div>
+                <div class="terminal-line">
+                  <span class="prompt">~ %</span>
+                  <span class="command" x-text="entry.command"></span>
+                </div>
+                <div class="terminal-output" :class="entry.accent">
+                  <template x-for="line in entry.output" :key="line">
+                    <span x-text="line"></span>
+                  </template>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+      </button>
+    </section>
+
+    <section class="social-stack" aria-label="Social links">
+      <div class="social-row">
+        <template x-for="item in config.socialLinks" :key="item.name">
+          <div class="social-slot">
+            <a
+              x-show="item.type === 'link'"
+              class="social-action glass"
+              :href="item.url"
+              target="_blank"
+              rel="noreferrer"
+              :aria-label="item.name"
+              :style="`--icon-color: ${item.color}`"
+              x-html="item.icon"
+            ></a>
+
+            <button
+              x-show="item.type !== 'link'"
+              class="social-action glass"
+              type="button"
+              @click="runSocialAction(item)"
+              :aria-label="item.type === 'email' ? config.ui.copyEmailLabel : config.ui.openQrLabel"
+              :style="`--icon-color: ${item.color}`"
+            >
+              <span x-show="item.type !== 'email' || !emailCopied" x-html="item.icon"></span>
+              <span x-show="item.type === 'email' && emailCopied" x-cloak class="copied-text" x-text="config.ui.copiedText"></span>
+            </button>
+          </div>
+        </template>
+      </div>
+
+      <section class="music-player glass" aria-label="Music player">
+        <div class="music-main">
+          <div class="cover-frame">
+            <img class="cover" :class="{ 'is-playing': musicPlaying }" :src="config.music.coverUrl" :alt="config.music.coverAlt">
+          </div>
+          <div class="song-info">
+            <span class="song-title" x-text="config.music.title"></span>
+            <span class="song-artist" x-text="config.music.artist"></span>
+          </div>
+        </div>
+
+        <button class="play-button" type="button" @click="toggleMusic()" :aria-label="musicPlaying ? 'Pause' : 'Play'">
+          <svg x-show="!musicPlaying" class="icon" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          <svg x-show="musicPlaying" x-cloak class="icon" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        </button>
+        <audio x-ref="audio" :src="config.music.audioUrl" preload="none" @ended="handleAudioEnded()"></audio>
+      </section>
+    </section>
+
+    <section class="gallery-section" x-init="registerGallery($refs.gallery)">
+      <div class="section-head">
+        <h2 class="section-title" x-text="config.gallery.title"></h2>
+        <span class="section-hint" x-text="config.gallery.hint"></span>
+      </div>
+
+      <div
+        class="gallery-strip"
+        x-ref="gallery"
+        @touchstart.passive="pauseGallery()"
+        @touchend.passive="resumeGallery()"
+        @mouseenter="pauseGallery()"
+        @mouseleave="resumeGallery()"
+      >
+        <template x-for="photo in config.gallery.images" :key="photo.url">
+          <figure class="gallery-item">
+            <img :src="photo.url" :alt="photo.alt" loading="lazy">
+          </figure>
+        </template>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p>
+        <span x-text="config.ui.footerPrefix"></span>
+        <span class="garden-days" x-text="gardenDays"></span>
+        <span x-text="config.ui.footerSuffix"></span>
+      </p>
+    </footer>
+  </main>
+
+  <div
+    class="modal-layer"
+    x-show="showQR"
+    x-cloak
+    x-transition.opacity.duration.220ms
+    @click.self="showQR = false"
+  >
+    <section
+      class="qr-drawer"
+      x-show="showQR"
+      x-transition:enter="transition ease-out duration-300"
+      x-transition:enter-start="translate-y-full opacity-0"
+      x-transition:enter-end="translate-y-0 opacity-100"
+      x-transition:leave="transition ease-in duration-200"
+      x-transition:leave-start="translate-y-0 opacity-100"
+      x-transition:leave-end="translate-y-full opacity-0"
+      aria-modal="true"
+      role="dialog"
+      :aria-label="config.qr.title"
+    >
+      <div class="drawer-handle" aria-hidden="true"></div>
+      <button class="qr-close" type="button" @click="showQR = false" :aria-label="config.ui.closeLabel">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 18 6M6 6l12 12"/>
+        </svg>
+      </button>
+
+      <h3 class="qr-title" x-text="config.qr.title"></h3>
+      <p class="qr-subtitle" x-text="config.qr.subtitle"></p>
+      <div class="qr-frame">
+        <img :src="config.qr.imageUrl" :alt="config.qr.imageAlt">
+      </div>
+    </section>
+  </div>
+</body>
+</html>
