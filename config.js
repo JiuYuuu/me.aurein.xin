@@ -12,7 +12,7 @@ window.CONFIG = {
   },
 
   ui: {
-    status: "Currently Coding",
+    status: "Sleeeeeeeping...",
     darkModeLabel: "切换明暗模式",
     tapHint: "-- Tap to Hack --",
     copiedText: "Copied!",
@@ -32,9 +32,9 @@ window.CONFIG = {
 
     // 名片正面的标签：新增、删除或改名都只需要修改这个数组。
     tags: [
-      { icon: "📖", label: "读书" },
+      { icon: "📖", label: "学生" },
       { icon: "🎮", label: "游戏" },
-      { icon: "💻", label: "程序员" }
+      { icon: "💻", label: "计科" }
     ]
   },
 
@@ -42,20 +42,24 @@ window.CONFIG = {
     terminalTitle: "aurein@macbook-m4:~",
     commands: [
       {
-        command: "whoami",
-        output: ["Dev | Student | Coder"],
-        accent: "muted"
+        command: "cat application.yml",
+        output: [
+          "aurein:",
+          "  identity: Student & Backend Developer",
+          "  focus:",
+          "    - Backend: [Java, Spring-Boot, MySQL]",
+          "  environment:",
+          "    local: MacBook-Air-M4",
+          "    server: Debian-11.1.0",
+          "  status: \"🟢 System Running\""
+        ].map(line => line.replace(/ /g, '\u00A0')),
+        accent: "cyan"
       },
       {
         command: "cat stack.json",
         output: ['["HTML5", "CSS3", "Alpine.js"]'],
         accent: "muted"
       },
-      {
-        command: "ls ./passions",
-        output: ["> UI_Micro_Interactions", "> Glassmorphism", "> Cyber_Security"],
-        accent: "cyan"
-      }
     ]
   },
 
@@ -68,7 +72,7 @@ window.CONFIG = {
     {
       type: "link",
       name: "GitHub",
-      url: "https://github.com/",
+      url: "https://github.com/JiuYuuu",
       color: "#1f2937",
       icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.464-1.11-1.464-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.164 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>'
     },
@@ -88,7 +92,7 @@ window.CONFIG = {
     },
     {
       type: "link",
-      name: "Bilibili",
+      name: "BiliBili",
       url: "https://space.bilibili.com/39397721",
       color: "#fb7299",
       icon: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 4l3 3M17 4l-3 3" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"/><circle cx="9" cy="13" r="1.4" fill="currentColor"/><circle cx="15" cy="13" r="1.4" fill="currentColor"/><path d="M10 17h4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"/></svg>'
@@ -109,8 +113,8 @@ window.CONFIG = {
 
   qr: {
     title: "Connect",
-    subtitle: "Scan to add",
-    imageUrl: "https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=Aurein_Connection",
+    subtitle: "Scan to add me",
+    imageUrl: "https://cdn.jsdelivr.net/gh/JiuYuuu/Blog-images/id/qqr.jpg",
     imageAlt: "Aurein QR Code"
   },
 
